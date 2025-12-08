@@ -10,7 +10,7 @@ export default function Home() {
   const { currencyLines, addCurrencyLine } = useCurrency();
 
   return (
-    <main className="min-h-screen p-4 md:p-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+    <main className="min-h-screen p-4 md:p-8 text-gray-900 dark:text-white transition-colors duration-300">
 
       {/* Main Conversion Container */}
       <div className="max-w-xl mx-auto">

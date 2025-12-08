@@ -1,32 +1,17 @@
 // src/app/Footer.tsx
 "use client";
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { externalLinks } from './links';
+// Import the Context Hook
+import { useCurrency } from './context/CurrencyContext';
 
 export default function Footer() {
-  const [theme, setTheme] = useState('light');
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-    localStorage.setItem('theme', newTheme);
-  };
-
-  useEffect(() => {
-    // Check localStorage first, then fall back to system preference
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-
-    setTheme(initialTheme);
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
-  }, []);
+  // Use Global State
+  const { isDarkMode, toggleDarkMode } = useCurrency();
 
   return (
-    <footer className="bg-gray-200 dark:bg-gray-800 py-4 mt-8">
+    <footer className="bg-gray-200 dark:bg-gray-800 py-4 mt-8 transition-colors duration-300">
       <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-300">
         <div className="mb-4">
           {externalLinks.map((link, index) => (
@@ -40,10 +25,10 @@ export default function Footer() {
         </div>
 
         <button
-          onClick={toggleTheme}
+          onClick={toggleDarkMode}
           className="py-2 px-4 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors"
         >
-          Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
+          Switch to {isDarkMode ? 'Light' : 'Dark'} Mode
         </button>
 
         <div className="mt-4">

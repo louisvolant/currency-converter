@@ -19,11 +19,37 @@ interface CachedRates {
 }
 
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
-  // 1. Dark Mode Management
+  // 1. Dark Mode State
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  // Initialize Theme on Mount
+  useEffect(() => {
+    // Check localStorage or System Preference
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    } else {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  // Toggle Function
   const toggleDarkMode = () => {
-    setIsDarkMode(prev => !prev);
+    setIsDarkMode((prev) => {
+      const newMode = !prev;
+      if (newMode) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+      return newMode;
+    });
   };
 
   // 2. Currency State
@@ -67,22 +93,16 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
 
                     // 3. Store fresh data in LocalStorage
                     if (typeof window !== 'undefined') {
-                        const newCache: CachedRates = {
-                            timestamp: Date.now(),
-                            rates: ratesData,
-                        };
+                        const newCache: CachedRates = { timestamp: Date.now(), rates: ratesData };
                         localStorage.setItem(CACHE_KEY, JSON.stringify(newCache));
                     }
                 } catch (error) {
-                    console.error("Error fetching or validating rates:", error);
-                    // Handle failure: maybe load stale cache if fetch fails
+                    console.error("Error fetching rates:", error);
                 }
             }
-
             setExchangeRates(ratesData);
             setAvailableCurrencies(Object.keys(ratesData).sort());
         };
-
         fetchRates();
     }, []);
 
@@ -110,12 +130,10 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     const newValue = parseFloat(newValueString) || 0;
     const lines = [...currencyLines];
     const updatedLineIndex = lines.findIndex(line => line.id === id);
-
     if (updatedLineIndex === -1) return;
 
     // Update the edited line's value
     lines[updatedLineIndex].value = newValue;
-
     const editedLine = lines[updatedLineIndex];
 
     // 1. Determine the value in EUR based on the edited line
@@ -145,7 +163,6 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
       // Round for display purposes
       line.value = parseFloat(line.value.toFixed(4));
     });
-
     setCurrencyLines(lines);
   };
 
@@ -154,7 +171,6 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
       setCurrencyLines(prevLines => {
         const lines = [...prevLines];
         const lineIndex = lines.findIndex(line => line.id === id);
-
         if (lineIndex === -1) return prevLines;
 
         // 1. Update the code
@@ -180,7 +196,6 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     setCurrencyLines(prevLines => {
       // Prevent deleting the base currency (EUR)
       if (prevLines.length <= 1) return prevLines;
-
       return prevLines.filter(line => line.id !== id);
     });
   };
@@ -196,7 +211,6 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     updateValue: (id, newValue) => updateValue(id, newValue),
     updateCurrencyCode,
     removeCurrencyLine,
-
   };
 
   return (
