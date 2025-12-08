@@ -57,8 +57,43 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
   const [availableCurrencies, setAvailableCurrencies] = useState<string[]>([]);
 
-    // 3. Fetch Exchange Rates (With use of localStorage)
-    useEffect(() => {
+  // New State: specific flag to track if we have loaded from localStorage yet
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // --- 3. PERSISTENCE LOGIC (Load & Save) ---
+  const CURRENCY_STORAGE_KEY = 'currency_lines_state';
+
+  // A. LOAD STATE ON MOUNT
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLines = localStorage.getItem(CURRENCY_STORAGE_KEY);
+      if (savedLines) {
+        try {
+          const parsed = JSON.parse(savedLines);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setCurrencyLines(parsed);
+          }
+        } catch (e) {
+          console.error("Failed to parse saved currency lines", e);
+        }
+      }
+      // Mark as initialized so we can start saving changes
+      setIsInitialized(true);
+    }
+  }, []);
+
+  // B. SAVE STATE ON CHANGE
+  useEffect(() => {
+    // Only save IF we have finished the initial load.
+    // This prevents overwriting saved data with the default EUR line on first render.
+    if (isInitialized && typeof window !== 'undefined') {
+      localStorage.setItem(CURRENCY_STORAGE_KEY, JSON.stringify(currencyLines));
+    }
+  }, [currencyLines, isInitialized]);
+
+
+  // --- 4. Fetch Exchange Rates ---
+  useEffect(() => {
         const CACHE_KEY = 'frankfurter_rates_cache';
         const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -85,9 +120,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
                 try {
                     console.log("Fetching fresh rates from API...");
                     const response = await fetch('https://api.frankfurter.dev/v1/latest?from=EUR');
-                    if (!response.ok) {
-                         throw new Error(`API returned status ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`API returned status ${response.status}`);
                     const data = await response.json();
                     ratesData = data.rates || {};
 
@@ -106,7 +139,8 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
         fetchRates();
     }, []);
 
-  // 4. Function to add a new currency
+  // --- 5. Action Functions ---
+
   const addCurrencyLine = () => {
     // Default to USD if available, otherwise pick the first available currency
     const newCode = availableCurrencies.includes('USD') ? 'USD' : (availableCurrencies[0] || 'USD');
@@ -208,7 +242,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     exchangeRates,
     availableCurrencies,
     addCurrencyLine,
-    updateValue: (id, newValue) => updateValue(id, newValue),
+    updateValue,
     updateCurrencyCode,
     removeCurrencyLine,
   };
