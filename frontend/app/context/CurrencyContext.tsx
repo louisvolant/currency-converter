@@ -141,14 +141,20 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
 
   // --- 5. Action Functions ---
 
-  const addCurrencyLine = () => {
-    // Default to USD if available, otherwise pick the first available currency
-    const newCode = availableCurrencies.includes('USD') ? 'USD' : (availableCurrencies[0] || 'USD');
+  const addCurrencyLine = (code?: string) => {
+    // Use provided code, or default to USD if available, otherwise pick the first available currency
+    const newCode = code || (availableCurrencies.includes('USD') ? 'USD' : (availableCurrencies[0] || 'USD'));
+
+    // Check for duplicate to prevent adding the same currency twice
+    if (currencyLines.some(line => line.code === newCode)) {
+      console.warn(`Currency ${newCode} is already added. Skipping duplicate.`);
+      return;
+    }
 
     // Ensure unique ID
     const newId = currencyLines.length > 0 ? Math.max(...currencyLines.map(c => c.id)) + 1 : 1;
 
-    // Calculate initial value based on EUR (assuming EUR line is always ID 1)
+    // Calculate initial value based on EUR (assuming EUR line is always present)
     const baseEuroValue = currencyLines.find(line => line.isBase)?.value || 1.00;
     const rate = exchangeRates[newCode] || 1;
     const initialValue = baseEuroValue * rate;

@@ -5,37 +5,23 @@ import React from 'react';
 import { useCurrency } from '../context/CurrencyContext';
 import { CurrencyLine as CurrencyLineType } from '../utils/types';
 import { Trash2 } from 'lucide-react';
-import { currencyDetails, getCountryCode } from '../utils/currencyData';
-import CurrencySelector from './CurrencySelector';
+import { getCountryCode } from '../utils/currencyData';
 
 // Define component props interface
 interface CurrencyLineProps {
-    currency: CurrencyLineType;
+  currency: CurrencyLineType;
 }
 
 const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency }) => {
-  // Destructure updateCurrencyCode from the context
-  const { updateValue, availableCurrencies, updateCurrencyCode, currencyLines, removeCurrencyLine } = useCurrency();
+  const { updateValue, currencyLines, removeCurrencyLine } = useCurrency();
 
   const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateValue(currency.id, e.target.value);
   };
 
-  // Implement the change handler for the currency code
-  const handleCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateCurrencyCode(currency.id, e.target.value);
-  };
-
   const handleRemove = () => {
     removeCurrencyLine(currency.id);
   };
-
-  // Get codes currently used in other lines to prevent duplicates in the select dropdown
-  const usedCodes = currencyLines
-    .filter(line => line.id !== currency.id)
-    .map(line => line.code);
-
-  const availableCodesForSelect = availableCurrencies.filter(code => !usedCodes.includes(code));
 
   // The base currency (EUR) is still fixed and not removable.
   const isRemovable = !currency.isBase && currencyLines.length > 1;
@@ -43,9 +29,9 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency }) => {
   const countryCode = getCountryCode(currency.code); // Get the code here
 
   return (
-    <div className="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 shadow-md mb-3 flex-wrap"> {/* Added flex-wrap as mobile fallback */}
+    <div className="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 shadow-md mb-3 flex-wrap">
 
-      {/* Input with text-right alignment - responsive text size */}
+      {/* Input with text-right alignment */}
       <input
         type="number"
         value={currency.value.toString()}
@@ -54,29 +40,22 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency }) => {
         aria-label={`Value for ${currency.code}`}
       />
 
-      {/* Currency Code Display/Selector */}
-      {currency.isBase ? (
-        <div
-          className="p-1.5 sm:p-2 text-base sm:text-xl font-semibold bg-blue-200 dark:bg-blue-600 text-blue-800 dark:text-blue-100 rounded-md
-                     flex items-center justify-center space-x-2
+      {/* Static Currency Display (Unified for Base & Others - No Selector) */}
+      <div
+        className="p-1.5 sm:p-2 text-base sm:text-xl font-semibold bg-blue-200 dark:bg-blue-600 text-blue-800 dark:text-blue-100 rounded-md
+                   flex items-center justify-center space-x-2
                      flex-shrink-0 overflow-hidden text-ellipsis max-w-[80px] sm:max-w-[100px]"
-        >
-          {/* 🚨 UTILISATION DE FLAG-ICONS - responsive size */}
-          <span
-            className={`fi fi-${countryCode} mr-1 rounded text-sm sm:text-base`}
-            aria-label={`Flag of ${currency.code}`}
-          ></span> {/* Removed inline style; use Tailwind */}
-          <span className="truncate">{currency.code}</span>
-        </div>
-      ) : (
-        // Other currencies use the clickable selector
-        <CurrencySelector
-          currentCode={currency.code}
-          lineId={currency.id}
+      >
+        {/* Flag */}
+        <span
+          className={`fi fi-${countryCode} mr-1 rounded`}
+          aria-label={`Flag of ${currency.code}`}
+          style={{ fontSize: '1.25rem' }}
         />
-      )}
+        <span className="truncate">{currency.code}</span>
+      </div>
 
-      {/* Delete Button - Conditional - responsive padding */}
+      {/* Delete Button - Conditional */}
       {isRemovable && (
         <button
           onClick={handleRemove}
