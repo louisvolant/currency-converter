@@ -32,16 +32,17 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({ currentCode, lineId
       {/* Button that currently displays the selected currency */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 p-2 text-xl font-semibold bg-blue-200 dark:bg-blue-600 text-blue-800 dark:text-blue-100 rounded-md transition duration-150 min-w-24 justify-center"
+        className="flex items-center space-x-2 p-2 text-xl font-semibold bg-blue-200 dark:bg-blue-600 text-blue-800 dark:text-blue-100 rounded-md transition duration-150 justify-center
+                   flex-shrink-0 max-w-[120px] overflow-hidden"
       >
         {/* 🚨 USE OF FLAG-ICONS ON THE BUTTON */}
         <span
-            className={`fi fi-${currentCountryCode} mr-1 rounded`}
+            className={`fi fi-${currentCountryCode} mr-1 rounded flex-shrink-0`}
             aria-label={`Flag of ${currentCode}`}
             style={{ fontSize: '1rem' }}
         ></span>
-        <span>{currentCode}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : 'rotate-0'}`} />
+        <span className="truncate">{currentCode}</span>
+        <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : 'rotate-0'}`} />
       </button>
 
       {/* Dropdown Menu */}

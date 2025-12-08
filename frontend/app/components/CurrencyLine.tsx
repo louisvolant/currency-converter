@@ -9,7 +9,6 @@ import { currencyDetails, getCountryCode } from '../utils/currencyData';
 import CurrencySelector from './CurrencySelector';
 
 
-
 // Define component props interface
 interface CurrencyLineProps {
     currency: CurrencyLineType;
@@ -58,7 +57,11 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency }) => {
 
             {/* Currency Code Display/Selector */}
             {currency.isBase ? (
-            <div className="p-2 text-xl font-semibold bg-blue-200 dark:bg-blue-600 text-blue-800 dark:text-blue-100 rounded-md min-w-24 text-center flex items-center justify-center space-x-2">
+            <div
+                className="p-2 text-xl font-semibold bg-blue-200 dark:bg-blue-600 text-blue-800 dark:text-blue-100 rounded-md
+                           flex items-center justify-center space-x-2
+                           flex-shrink-0 overflow-hidden text-ellipsis"
+            >
 
                 {/* 🚨 UTILISATION DE FLAG-ICONS */}
                 <span
@@ -66,7 +69,7 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency }) => {
                     aria-label={`Flag of ${currency.code}`}
                     style={{ fontSize: '1.25rem' }} // Ajustement optionnel de la taille
                 ></span>
-                <span>{currency.code}</span>
+                <span className="truncate">{currency.code}</span>
             </div>
             ) : (
                 // Other currencies use the clickable selector
@@ -80,7 +83,7 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency }) => {
       {isRemovable && (
         <button
           onClick={handleRemove}
-          className="p-3 text-red-600 dark:text-red-400 hover:text-white hover:bg-red-500 dark:hover:bg-red-700 rounded-full transition duration-150"
+          className="p-3 text-red-600 dark:text-red-400 hover:text-white hover:bg-red-500 dark:hover:bg-red-700 rounded-full transition duration-150 flex-shrink-0"
           aria-label={`Remove ${currency.code} line`}
         >
           <Trash2 className="w-5 h-5" />
