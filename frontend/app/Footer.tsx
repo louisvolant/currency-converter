@@ -11,7 +11,7 @@ export default function Footer() {
   const { isDarkMode, toggleDarkMode } = useCurrency();
 
   return (
-    <footer className="bg-gray-200 dark:bg-gray-800 py-4 mt-8 transition-colors duration-300">
+    <footer className="bg-white dark:bg-gray-900 py-4 mt-8 transition-colors duration-300">
       <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-300">
         <div className="mb-4">
           {externalLinks.map((link, index) => (
@@ -26,7 +26,7 @@ export default function Footer() {
 
         <button
           onClick={toggleDarkMode}
-          className="py-2 px-4 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors"
+          className="py-2 px-4 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors text-gray-800 dark:text-gray-200"
         >
           Switch to {isDarkMode ? 'Light' : 'Dark'} Mode
         </button>
