@@ -1,6 +1,6 @@
 // frontend/src/app/utils/currencyData.ts
 
-// Mappage des devises avec leurs noms et les emojis de drapeaux (pour référence)
+// Mapping of currencies with their names and flag emojis (for reference)
 export const currencyDetails: Record<string, { name: string, flag: string }> = {
     // Already defined
     'EUR': { name: 'Euro', flag: '🇪🇺' },

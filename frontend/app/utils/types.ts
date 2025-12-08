@@ -1,4 +1,4 @@
-// frontend/src/app/types.ts
+// frontend/src/app/utils/types.ts
 
 // Define the structure for a single currency line in the converter
 export interface CurrencyLine {

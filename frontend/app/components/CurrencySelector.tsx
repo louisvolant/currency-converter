@@ -34,7 +34,7 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({ currentCode, lineId
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 p-2 text-xl font-semibold bg-blue-200 dark:bg-blue-600 text-blue-800 dark:text-blue-100 rounded-md transition duration-150 min-w-24 justify-center"
       >
-        {/* 🚨 UTILISATION DE FLAG-ICONS SUR LE BOUTON */}
+        {/* 🚨 USE OF FLAG-ICONS ON THE BUTTON */}
         <span
             className={`fi fi-${currentCountryCode} mr-1 rounded`}
             aria-label={`Flag of ${currentCode}`}
@@ -50,7 +50,7 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({ currentCode, lineId
             {selectableCodes.map(code => {
             const detail = currencyDetails[code] || { name: 'Unknown Currency' };
             const isSelected = code === currentCode;
-            const codeForFlag = getCountryCode(code); // Récupérer le code pays pour l'option
+            const codeForFlag = getCountryCode(code); // Retrieve the country code for the option
 
             return (
               <div
@@ -58,7 +58,7 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({ currentCode, lineId
                 onClick={() => handleSelect(code)}
                 className={`flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${isSelected ? 'bg-blue-100 dark:bg-blue-900 font-bold' : ''}`}
               >
-{               /* 🚨 UTILISATION DE FLAG-ICONS DANS LA LISTE */}
+{               /* 🚨 USE OF FLAG-ICONS IN THE LIST */}
                 <span
                     className={`fi fi-${codeForFlag} mr-3 flex-shrink-0 rounded`}
                     aria-label={`Flag of ${code}`}

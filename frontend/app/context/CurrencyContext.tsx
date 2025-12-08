@@ -2,7 +2,7 @@
 'use client';
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { CurrencyLine, CurrencyContextType } from '../types';
+import { CurrencyLine, CurrencyContextType } from '../utils/types';
 
 // Initialize the context with undefined or null, and use a type assertion
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);

@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { useCurrency } from '../context/CurrencyContext';
-import { CurrencyLine as CurrencyLineType } from '../types';
+import { CurrencyLine as CurrencyLineType } from '../utils/types';
 import { Trash2 } from 'lucide-react';
 import { currencyDetails, getCountryCode } from '../utils/currencyData';
 import CurrencySelector from './CurrencySelector';

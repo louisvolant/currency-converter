@@ -4,7 +4,7 @@
 import { useCurrency } from './context/CurrencyContext';
 import CurrencyLine from './components/CurrencyLine';
 import { Moon, Sun, Plus } from 'lucide-react';
-import { CurrencyLine as CurrencyLineType } from './types'; // Import the type for mapping
+import { CurrencyLine as CurrencyLineType } from './utils/types';
 
 export default function Home() {
   const { currencyLines, addCurrencyLine, isDarkMode, toggleDarkMode } = useCurrency();

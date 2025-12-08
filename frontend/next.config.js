@@ -1,14 +1,14 @@
-// frontend/next.config.js (CORRECTED)
+// frontend/next.config.js
 
 /** @type {import('next').NextConfig} */
 const withPWA = require('next-pwa')({
   dest: 'public',
-  // Activation du skipWaiting automatique
+  // Activation of automatic skipWaiting
   skipWaiting: true,
-  // Désactiver en mode dev pour ne pas interférer avec les rechargements rapides
+  // Disable in dev mode to not interfere with fast reloads
   disable: process.env.NODE_ENV === 'development',
   register: true,
-  // Ajout des runTimeCaching (bonne pratique pour la PWA)
+  // Addition of runTimeCaching (good practice for the PWA)
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/.*\.(js|css|woff2?|png|jpg|webp|svg)/,
@@ -17,7 +17,7 @@ const withPWA = require('next-pwa')({
         cacheName: 'static-resources',
         expiration: {
           maxEntries: 200,
-          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 jours
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
         },
       },
     },
@@ -31,7 +31,7 @@ const withPWA = require('next-pwa')({
   ],
 });
 
-// Définir la configuration Next.js dans un seul objet
+// Define the Next.js configuration in a single object
 const nextConfig = {
   reactStrictMode: true,
     images: {
@@ -39,11 +39,11 @@ const nextConfig = {
           {
             protocol: 'https',
             hostname: 'flagcdn.com',
-            //pathname: '/**', // Vous pouvez utiliser cela si vous voulez être plus strict sur le chemin
+            //pathname: '/**', // Can be used if you want to be stricter on the path
           },
         ],
       },
 };
 
-// Exporter le résultat unique de l'application du wrapper PWA à la configuration
-module.exports = withPWA(nextConfig); // EXPORT UNIQUE ET CORRECT
+// Export the unique result of applying the PWA wrapper to the configuration
+module.exports = withPWA(nextConfig);
