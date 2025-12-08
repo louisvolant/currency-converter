@@ -5,7 +5,9 @@ import CurrencyLine from './components/CurrencyLine';
 import { Plus, X } from 'lucide-react'; // Added X for cancel
 import { CurrencyLine as CurrencyLineType } from './utils/types';
 import { currencyDetails, getCountryCode } from './utils/currencyData'; // Import for list details
-import { useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
+
+
 
 export default function Home() {
   const { currencyLines, addCurrencyLine } = useCurrency();
@@ -24,13 +26,21 @@ export default function Home() {
     setShowAddList(false);
   };
 
+  const topRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showAddList && topRef.current) {
+      topRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [showAddList]);
+
   return (
     <main className="min-h-screen p-4 md:p-8 text-gray-900 dark:text-white transition-colors duration-300">
-      {/* Main Conversion Container */}
+      <div ref={topRef} />
       <div className="max-w-xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
-          Your Currencies
-        </h2>
+          <h2 className="text-2xl font-semibold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
+                Your Currencies
+            </h2>
 
         {/* Currency lines list */}
         {currencyLines.map((currency: CurrencyLineType) => (

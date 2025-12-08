@@ -40,7 +40,7 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency }) => {
         value={currency.value.toString()}
         onChange={handleValueChange}
         placeholder="0"
-        className="w-full p-2 pr-9 text-base sm:text-xl font-bold rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500 transition duration-150 text-right"
+        className="w-full p-2 text-base sm:text-xl font-bold rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500 transition duration-150 text-right"
         aria-label={`Value for ${currency.code}`}
       />
 
