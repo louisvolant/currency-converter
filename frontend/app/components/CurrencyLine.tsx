@@ -31,31 +31,31 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency }) => {
   return (
     <div className="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 shadow-md mb-3 flex-wrap">
 
-    <div className="relative flex-grow">
-      <input
-        type="number"
-        inputMode="decimal"
-        pattern="[0-9]*"
-        step="any"
-        value={currency.value.toString()}
-        onChange={handleValueChange}
-        placeholder="0"
-        className="w-full p-2 text-base sm:text-xl font-bold rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500 transition duration-150 text-right"
-        aria-label={`Value for ${currency.code}`}
-      />
+      <div className="relative flex-grow">
+        <input
+          type="number"
+          inputMode="decimal"
+          pattern="[0-9]*"
+          step="any"
+          value={currency.value.toString()}
+          onChange={handleValueChange}
+          placeholder="0"
+          className="w-full p-2 pr-12 text-base sm:text-xl font-bold rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500 transition duration-150 text-right"
+          aria-label={`Value for ${currency.code}`}
+        />
 
-      {/* Clear button – only shown when there is a value */}
-      {currency.value !== 0 && (
-        <button
-          type="button"
-          onClick={() => updateValue(currency.id, "")}
-          className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-          aria-label="Clear value"
-        >
-          <X className="w-5 h-5" />
-        </button>
-      )}
-    </div>
+        {/* Clear button – now safely above the input */}
+        {currency.value !== 0 && (
+          <button
+            type="button"
+            onClick={() => updateValue(currency.id, "")}
+            className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 pointer-events-auto z-10"
+            aria-label="Clear value"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
+      </div>
 
       {/* Static Currency Display (Unified for Base & Others - No Selector) */}
       <div
