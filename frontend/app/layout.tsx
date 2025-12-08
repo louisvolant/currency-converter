@@ -5,15 +5,18 @@ import './globals.css';
 import { CurrencyProvider } from './context/CurrencyContext';
 import ClientThemeWrapper from './components/ClientThemeWrapper';
 import React, { ReactNode } from 'react';
+import type { Metadata } from 'next';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Currency Converter',
   description: 'A multi-currency converter built with Next.js and Tailwind CSS.',
+  icons: {
+    icon: '/currency-converter-128.png',
+  },
 };
 
-// Default Next.js Layout is a Server Component
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
@@ -41,9 +44,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
       </head>
       <body>
-        {/* CurrencyProvider is used here because it is a context setup, which is fine on server */}
         <CurrencyProvider>
-          {/* ClientThemeWrapper is the boundary where client-side logic starts */}
           <ClientThemeWrapper>
             {children}
           </ClientThemeWrapper>
