@@ -7,7 +7,6 @@ import { CurrencyLine as CurrencyLineType } from '../utils/types';
 import { Trash2, X } from 'lucide-react';
 import { getCountryCode } from '../utils/currencyData';
 
-// Define component props interface
 interface CurrencyLineProps {
   currency: CurrencyLineType;
 }
@@ -19,19 +18,14 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency }) => {
     updateValue(currency.id, e.target.value);
   };
 
-  const handleRemove = () => {
-    removeCurrencyLine(currency.id);
-  };
-
-  // The base currency (EUR) is still fixed and not removable.
+  const handleRemove = () => removeCurrencyLine(currency.id);
   const isRemovable = !currency.isBase && currencyLines.length > 1;
-
-  const countryCode = getCountryCode(currency.code); // Get the code here
+  const countryCode = getCountryCode(currency.code);
 
   return (
-    <div className="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 shadow-md mb-3 flex-wrap">
-
-      <div className="relative flex-grow">
+    <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 shadow-md mb-3">
+      {/* INPUT — takes all remaining space */}
+      <div className="relative flex-1 min-w-0">
         <input
           type="number"
           inputMode="decimal"
@@ -40,49 +34,42 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency }) => {
           value={currency.value.toString()}
           onChange={handleValueChange}
           placeholder="0"
-          className="w-full p-2 pr-12 text-base sm:text-xl font-bold rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500 transition duration-150 text-right"
+          className="w-full px-4 py-3 pr-12 text-lg sm:text-xl font-bold rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-right"
           aria-label={`Value for ${currency.code}`}
         />
 
-        {/* Clear button – now safely above the input */}
+        {/* Clear X */}
         {currency.value !== 0 && (
           <button
             type="button"
             onClick={() => updateValue(currency.id, "")}
-            className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 pointer-events-auto z-10"
-            aria-label="Clear value"
+            className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-red-500 dark:hover:text-red-400 z-10 transition"
+            aria-label="Clear"
           >
             <X className="w-5 h-5" />
           </button>
         )}
       </div>
 
-      {/* Static Currency Display (Unified for Base & Others - No Selector) */}
-      <div
-        className="p-1.5 sm:p-2 text-base sm:text-xl font-semibold bg-blue-200 dark:bg-blue-600 text-blue-800 dark:text-blue-100 rounded-md
-                   flex items-center justify-center space-x-2
-                     flex-shrink-0 overflow-hidden text-ellipsis max-w-[80px] sm:max-w-[100px]"
-      >
-        {/* Flag */}
-        <span
-          className={`fi fi-${countryCode} mr-1 rounded`}
-          aria-label={`Flag of ${currency.code}`}
-          style={{ fontSize: '1.25rem' }}
-        />
-        <span className="truncate">{currency.code}</span>
+      {/* RIGHT GROUP: Badge + Trash — never wraps, takes only needed width */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {/* Blue currency badge */}
+        <div className="flex items-center gap-2 px-3 py-2 text-lg font-bold bg-blue-200 dark:bg-blue-600 text-blue-900 dark:text-blue-100 rounded-lg whitespace-nowrap">
+          <span className={`fi fi-${countryCode}`} style={{ fontSize: '1.4rem' }} />
+          <span>{currency.code}</span>
+        </div>
+
+        {/* Trash — only if removable */}
+        {isRemovable && (
+          <button
+            onClick={handleRemove}
+            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition"
+            aria-label={`Remove ${currency.code}`}
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        )}
       </div>
-
-      {/* Delete Button - Conditional */}
-      {isRemovable && (
-        <button
-          onClick={handleRemove}
-          className="p-1.5 sm:p-3 text-red-600 dark:text-red-400 hover:text-white hover:bg-red-500 dark:hover:bg-red-700 rounded-full transition duration-150 flex-shrink-0"
-          aria-label={`Remove ${currency.code} line`}
-        >
-          <Trash2 className="w-4 sm:w-5 h-4 sm:h-5" />
-        </button>
-      )}
-
     </div>
   );
 };
