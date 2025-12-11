@@ -2,7 +2,8 @@
 'use client';
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { CurrencyLine, CurrencyContextType } from '../utils/types';
+import { CurrencyLine, CurrencyContextType, CachedRates } from '../utils/types';
+import { fetchExchangeRates } from '@/lib/api';
 
 // Initialize the context with undefined or null, and use a type assertion
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
@@ -12,16 +13,9 @@ const initialCurrencyLines: CurrencyLine[] = [
   { id: 1, code: 'EUR', value: 1.00, isBase: true },
 ];
 
-// Define the structure for cached data
-interface CachedRates {
-    timestamp: number;
-    rates: Record<string, number>;
-}
-
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   // 1. Dark Mode State
   const [isDarkMode, setIsDarkMode] = useState(false);
-
   // Initialize Theme on Mount
   useEffect(() => {
     // Check localStorage or System Preference
@@ -97,7 +91,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
         const CACHE_KEY = 'frankfurter_rates_cache';
         const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
-        const fetchRates = async () => {
+        const loadAndFetchRates = async () => {
             let ratesData: Record<string, number> = {};
             let isCacheValid = false;
 
@@ -105,12 +99,17 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
             if (typeof window !== 'undefined') {
                 const cached = localStorage.getItem(CACHE_KEY);
                 if (cached) {
-                    const parsed: CachedRates = JSON.parse(cached);
-                    // Check if cache is less than 24 hours old
-                    if (Date.now() - parsed.timestamp < ONE_DAY_MS) {
-                        ratesData = parsed.rates;
-                        isCacheValid = true;
-                        console.log("Using cached rates.");
+                    try {
+                        const parsed: CachedRates = JSON.parse(cached);
+                        // Check if cache is less than 24 hours old
+                        if (Date.now() - parsed.timestamp < ONE_DAY_MS) {
+                            ratesData = parsed.rates;
+                            isCacheValid = true;
+                            console.log("Using cached rates.");
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse cached rates.", e);
+                        localStorage.removeItem(CACHE_KEY);
                     }
                 }
             }
@@ -119,27 +118,31 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
             if (!isCacheValid) {
                 try {
                     console.log("Fetching fresh rates from API...");
-                    const response = await fetch('https://api.frankfurter.dev/v1/latest?from=EUR');
-                    if (!response.ok) throw new Error(`API returned status ${response.status}`);
-                    const data = await response.json();
-                    ratesData = data.rates || {};
+                    // --- CALL THE API FUNCTION ---
+                    ratesData = await fetchExchangeRates();
 
                     // 3. Store fresh data in LocalStorage
-                    if (typeof window !== 'undefined') {
+                    if (typeof window !== 'undefined' && Object.keys(ratesData).length > 0) {
                         const newCache: CachedRates = { timestamp: Date.now(), rates: ratesData };
                         localStorage.setItem(CACHE_KEY, JSON.stringify(newCache));
                     }
                 } catch (error) {
-                    console.error("Error fetching rates:", error);
+                    // Error already logged in fetchExchangeRates, but we can log context here too.
+                    console.error("Failed to update exchange rates in context.", error);
                 }
             }
-            setExchangeRates(ratesData);
-            setAvailableCurrencies(Object.keys(ratesData).sort());
+
+            // Only update state if we have valid data (from cache or new fetch)
+            if (Object.keys(ratesData).length > 0) {
+                setExchangeRates(ratesData);
+                setAvailableCurrencies(Object.keys(ratesData).sort());
+            }
         };
-        fetchRates();
+        loadAndFetchRates();
     }, []);
 
   // --- 5. Action Functions ---
+  // ... (addCurrencyLine, updateValue, updateCurrencyCode, removeCurrencyLine remain unchanged) ...
 
   const addCurrencyLine = (code?: string) => {
     // Use provided code, or default to USD if available, otherwise pick the first available currency
@@ -239,6 +242,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
       return prevLines.filter(line => line.id !== id);
     });
   };
+
 
   // The context value, ensuring it matches CurrencyContextType
   const contextValue: CurrencyContextType = {

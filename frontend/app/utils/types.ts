@@ -1,6 +1,5 @@
 // frontend/src/app/utils/types.ts
 
-// Define the structure for a single currency line in the converter
 export interface CurrencyLine {
   id: number;
   code: string;
@@ -19,4 +18,9 @@ export interface CurrencyContextType {
   updateValue: (id: number, newValue: string) => void;
   updateCurrencyCode: (id: number, newCode: string) => void;
   removeCurrencyLine: (id: number) => void;
+}
+
+export interface CachedRates {
+    timestamp: number;
+    rates: Record<string, number>;
 }
