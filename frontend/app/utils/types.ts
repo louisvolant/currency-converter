@@ -14,13 +14,16 @@ export interface CurrencyContextType {
   currencyLines: CurrencyLine[];
   exchangeRates: Record<string, number>;
   availableCurrencies: string[];
+  currencyNames: Record<string, string>;
   addCurrencyLine: (code?: string) => void;
   updateValue: (id: number, newValue: string) => void;
   updateCurrencyCode: (id: number, newCode: string) => void;
   removeCurrencyLine: (id: number) => void;
 }
 
+// Define the structure for cached data
 export interface CachedRates {
     timestamp: number;
     rates: Record<string, number>;
+    names: Record<string, string>;
 }

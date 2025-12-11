@@ -17,6 +17,14 @@ interface FawazahmedRatesResponse {
 // Define the structure for the currencies list (new API)
 interface FawazahmedCurrenciesListResponse extends Record<string, string> {}
 
+// --- NEW/UPDATED EXPORT TYPES ---
+export interface CurrencyNameMap {
+    [code: string]: string; // e.g., 'USD': 'United States Dollar'
+}
+export interface ExchangeData {
+    rates: Record<string, number>;
+    names: CurrencyNameMap;
+}
 
 // --- FRANKFURTER API FUNCTION ---
 
@@ -51,38 +59,59 @@ export async function fetchExchangeRatesFrankFurterDev(): Promise<Record<string,
 // --- FAWAZAHMED0 API FUNCTION (NEW) ---
 
 /**
- * Fetches the latest exchange rates from the Fawazahmed0 API.
- * It combines the list of all currencies and their rates against EUR.
- * @returns A promise that resolves to a record of currency codes to their exchange rate relative to EUR.
+ * Fetches the latest exchange rates and currency names from the Fawazahmed0 API.
+ * It filters the results to only include 3-letter codes.
+ * @returns A promise that resolves to an object containing filtered rates and names.
  */
-export async function fetchExchangeRatesFawazahmed0(): Promise<Record<string, number>> {
+export async function fetchExchangeRatesFawazahmed0(): Promise<ExchangeData> {
     const RATES_URL = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json';
+    const NAMES_URL = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json';
 
     try {
-        // We only need the rates URL for the rate data
-        const response = await fetch(RATES_URL);
+        // Fetch rates and names in parallel
+        const [ratesResponse, namesResponse] = await Promise.all([
+            fetch(RATES_URL),
+            fetch(NAMES_URL),
+        ]);
 
-        if (!response.ok) {
-            throw new Error(`Fawazahmed0 API returned status ${response.status}: ${response.statusText}`);
+        if (!ratesResponse.ok) {
+            throw new Error(`Fawazahmed0 Rates API returned status ${ratesResponse.status}: ${ratesResponse.statusText}`);
+        }
+        if (!namesResponse.ok) {
+            throw new Error(`Fawazahmed0 Names API returned status ${namesResponse.status}: ${namesResponse.statusText}`);
         }
 
-        const data: FawazahmedRatesResponse = await response.json();
+        const ratesData: FawazahmedRatesResponse = await ratesResponse.json();
+        const namesData: FawazahmedCurrenciesListResponse = await namesResponse.json();
 
-        // The data structure is { "date": ..., "eur": { "usd": 1.08, ... } }
-        // We return the inner 'eur' object as the rates map.
-        const rates = data.eur || {};
+        const rawRates = ratesData.eur || {};
+        const rawNames = namesData || {};
 
-        // The API provides the rates in lowercase (e.g., 'usd', 'eur').
-        // We need to convert the keys to uppercase to match your existing currency codes (EUR, USD, etc.)
-        const uppercaseRates: Record<string, number> = {};
-        for (const [code, rate] of Object.entries(rates)) {
-            uppercaseRates[code.toUpperCase()] = rate;
+        const filteredRates: Record<string, number> = {};
+        const filteredNames: CurrencyNameMap = {};
+
+        // Combine, convert to uppercase, and filter to 3-letter codes
+        for (const [codeLower, rate] of Object.entries(rawRates)) {
+            const codeUpper = codeLower.toUpperCase();
+
+            // 1. Filter: Check for 3-letter code
+            if (codeUpper.length === 3) {
+                // 2. Add Rate
+                filteredRates[codeUpper] = rate;
+
+                // 3. Add Name (from the other endpoint)
+                // Use the name from the names endpoint, falling back to a default if not found
+                filteredNames[codeUpper] = rawNames[codeLower] || codeUpper;
+            }
         }
 
-        return uppercaseRates;
+        return {
+            rates: filteredRates,
+            names: filteredNames
+        };
 
     } catch (error) {
-        console.error("Error fetching rates from Fawazahmed0:", error);
+        console.error("Error fetching data from Fawazahmed0:", error);
         throw error;
     }
 }

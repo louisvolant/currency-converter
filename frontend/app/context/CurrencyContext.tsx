@@ -53,6 +53,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   const [currencyLines, setCurrencyLines] = useState<CurrencyLine[]>(initialCurrencyLines);
   const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
   const [availableCurrencies, setAvailableCurrencies] = useState<string[]>([]);
+  const [currencyNames, setCurrencyNames] = useState<Record<string, string>>({});
 
   // New State: specific flag to track if we have loaded from localStorage yet
   const [isInitialized, setIsInitialized] = useState(false);
@@ -80,12 +81,14 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // B. SAVE STATE ON CHANGE
+  // --- 4. Fetch Exchange Rates (Major Update) ---
   useEffect(() => {
-        const CACHE_KEY = 'frankfurter_rates_cache'; // You might want to rename this to 'rates_cache' later
+        const CACHE_KEY = 'rates_and_names_cache';
         const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
         const loadAndFetchRates = async () => {
             let ratesData: Record<string, number> = {};
+            let namesData: Record<string, string> = {};
             let isCacheValid = false;
 
             // 1. Check LocalStorage
@@ -97,11 +100,12 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
                         // Check if cache is less than 24 hours old
                         if (Date.now() - parsed.timestamp < ONE_DAY_MS) {
                             ratesData = parsed.rates;
+                            namesData = parsed.names;
                             isCacheValid = true;
-                            console.log("Using cached rates.");
+                            console.log("Using cached rates and names.");
                         }
                     } catch (e) {
-                        console.error("Failed to parse cached rates.", e);
+                        console.error("Failed to parse cached data.", e);
                         localStorage.removeItem(CACHE_KEY);
                     }
                 }
@@ -110,15 +114,19 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
             // 2. Fetch if cache is invalid/expired
             if (!isCacheValid) {
                 try {
-                    // console.log("Fetching fresh rates from Fawazahmed0 API...");
+                    console.log("Fetching fresh rates and names from Fawazahmed0 API...");
 
-                    ratesData = await fetchExchangeRatesFawazahmed0();
-                    // To switch back, change the line above to:
-                    // ratesData = await fetchExchangeRatesFrankFurterDev();
+                    const apiData = await fetchExchangeRatesFawazahmed0();
+                    ratesData = apiData.rates;
+                    namesData = apiData.names;
 
                     // 3. Store fresh data in LocalStorage
                     if (typeof window !== 'undefined' && Object.keys(ratesData).length > 0) {
-                        const newCache: CachedRates = { timestamp: Date.now(), rates: ratesData };
+                        const newCache: CachedRates = {
+                            timestamp: Date.now(),
+                            rates: ratesData,
+                            names: namesData,
+                        };
                         localStorage.setItem(CACHE_KEY, JSON.stringify(newCache));
                     }
                 } catch (error) {
@@ -129,6 +137,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
             // Only update state if we have valid data
             if (Object.keys(ratesData).length > 0) {
                 setExchangeRates(ratesData);
+                setCurrencyNames(namesData);
                 setAvailableCurrencies(Object.keys(ratesData).sort());
             }
         };
@@ -136,8 +145,6 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
   // --- 5. Action Functions ---
-  // ... (addCurrencyLine, updateValue, updateCurrencyCode, removeCurrencyLine remain unchanged) ...
-
   const addCurrencyLine = (code?: string) => {
     // Use provided code, or default to USD if available, otherwise pick the first available currency
     const newCode = code || (availableCurrencies.includes('USD') ? 'USD' : (availableCurrencies[0] || 'USD'));
@@ -245,6 +252,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     currencyLines,
     exchangeRates,
     availableCurrencies,
+    currencyNames,
     addCurrencyLine,
     updateValue,
     updateCurrencyCode,
