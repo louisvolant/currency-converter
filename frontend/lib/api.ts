@@ -61,6 +61,7 @@ export async function fetchExchangeRatesFrankFurterDev(): Promise<Record<string,
 /**
  * Fetches the latest exchange rates and currency names from the Fawazahmed0 API.
  * It filters the results to only include 3-letter codes.
+ * FIX: Ensures the currency name is looked up using the correct lowercase key.
  * @returns A promise that resolves to an object containing filtered rates and names.
  */
 export async function fetchExchangeRatesFawazahmed0(): Promise<ExchangeData> {
@@ -90,18 +91,19 @@ export async function fetchExchangeRatesFawazahmed0(): Promise<ExchangeData> {
         const filteredRates: Record<string, number> = {};
         const filteredNames: CurrencyNameMap = {};
 
-        // Combine, convert to uppercase, and filter to 3-letter codes
+        // Iterate over the rates (e.g., 'mad', 'usd')
         for (const [codeLower, rate] of Object.entries(rawRates)) {
             const codeUpper = codeLower.toUpperCase();
 
             // 1. Filter: Check for 3-letter code
             if (codeUpper.length === 3) {
-                // 2. Add Rate
+                // 2. Add Rate (using uppercase key)
                 filteredRates[codeUpper] = rate;
 
-                // 3. Add Name (from the other endpoint)
-                // Use the name from the names endpoint, falling back to a default if not found
-                filteredNames[codeUpper] = rawNames[codeLower] || codeUpper;
+                // 3. Add Name (using uppercase key, but look up name using the lowercase key)
+                // If the name is not found in the rawNames map, fall back to the uppercase code itself.
+                const name = rawNames[codeLower] || codeUpper;
+                filteredNames[codeUpper] = name;
             }
         }
 

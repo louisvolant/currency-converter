@@ -3,7 +3,8 @@
 
 import { useCurrency } from '../context/CurrencyContext';
 import { X, Search } from 'lucide-react';
-import { currencyDetails, getCountryCode } from '../utils/currencyData';
+// 1. FIX IMPORTS: Only keep getCountryCode from currencyData.
+import { getCountryCode } from '../utils/currencyData';
 import { useState, useEffect, useRef } from 'react';
 
 interface CurrencyAdderProps {
@@ -11,7 +12,7 @@ interface CurrencyAdderProps {
 }
 
 export default function CurrencyAdder({ onClose }: CurrencyAdderProps) {
-  const { availableCurrencies, currencyLines, addCurrencyLine } = useCurrency();
+  const { availableCurrencies, currencyLines, addCurrencyLine, currencyNames } = useCurrency();
   const [search, setSearch] = useState('');
 
   // Filter unused currencies + search
@@ -19,8 +20,8 @@ export default function CurrencyAdder({ onClose }: CurrencyAdderProps) {
   const unusedCurrencies = availableCurrencies.filter(code => !usedCodes.includes(code));
 
   const filteredCurrencies = unusedCurrencies.filter(code => {
-    const detail = currencyDetails[code];
-    const name = detail?.name || '';
+    // 3. FIX SEARCH LOGIC: Use currencyNames for searching
+    const name = currencyNames[code] || ''; // Use the name from the context
     const lowerSearch = search.toLowerCase();
     return code.toLowerCase().includes(lowerSearch) || name.toLowerCase().includes(lowerSearch);
   });
@@ -59,8 +60,8 @@ export default function CurrencyAdder({ onClose }: CurrencyAdderProps) {
           </p>
         ) : (
           filteredCurrencies.map(code => {
-            const detail = currencyDetails[code] || { name: 'Unknown' };
             const countryCode = getCountryCode(code);
+            const name = currencyNames[code] || 'Unknown Currency';
 
             return (
               <button
@@ -74,7 +75,7 @@ export default function CurrencyAdder({ onClose }: CurrencyAdderProps) {
                 />
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold text-gray-900 dark:text-white">{code}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 truncate">{detail.name}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 truncate">{name}</div>
                 </div>
               </button>
             );
