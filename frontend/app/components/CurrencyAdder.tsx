@@ -3,7 +3,6 @@
 
 import { useCurrency } from '../context/CurrencyContext';
 import { X, Search } from 'lucide-react';
-// 1. FIX IMPORTS: Only keep getCountryCode from currencyData.
 import { getCountryCode } from '../utils/currencyData';
 import { useState, useEffect, useRef } from 'react';
 
@@ -20,7 +19,7 @@ export default function CurrencyAdder({ onClose }: CurrencyAdderProps) {
   const unusedCurrencies = availableCurrencies.filter(code => !usedCodes.includes(code));
 
   const filteredCurrencies = unusedCurrencies.filter(code => {
-    // 3. FIX SEARCH LOGIC: Use currencyNames for searching
+    // Use currencyNames for searching
     const name = currencyNames[code] || ''; // Use the name from the context
     const lowerSearch = search.toLowerCase();
     return code.toLowerCase().includes(lowerSearch) || name.toLowerCase().includes(lowerSearch);

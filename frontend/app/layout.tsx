@@ -4,38 +4,40 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { CurrencyProvider } from './context/CurrencyContext';
 import ClientThemeWrapper from './components/ClientThemeWrapper';
-import React, { ReactNode } from 'react';
-import type { Metadata } from 'next';
+import React, { ReactNode } from 'react'
+import type { Metadata, Viewport } from 'next';
 import Footer from './Footer';
 import Image from 'next/image';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// 1. Separate Viewport export
+export const viewport: Viewport = {
+  themeColor: '#000000',
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
+// 2. Metadata for PWA assets
 export const metadata: Metadata = {
   title: 'Currency Converter',
-  description: 'A multi-currency converter built with Next.js and Tailwind CSS.',
+  description: 'A multi-currency converter using Fawazahmed0 & FrankFurterDev rates.',
   icons: {
     icon: '/currency-converter-128.png',
+    apple: '/icons/icon-currency.png',
+  },
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'SuperApp',
   },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        {/* PWA manifest link */}
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="SuperApp" />
-        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-        <link href="/splash/iphone15promax.png"
-              sizes="1290x2796"
-              rel="apple-touch-startup-image"
-              media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
-      </head>
       <body className={`antialiased bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300 ${inter.className}`}>
         <header className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 text-white shadow-md pt-safe-top">
           <div className="container mx-auto px-4 py-4 flex items-center">
