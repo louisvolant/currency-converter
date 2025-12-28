@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
       </head>
       <body className={`antialiased bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300 ${inter.className}`}>
-        <header className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 text-white shadow-md pt-[env(safe-area-inset-top)] box-content">
+        <header className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 text-white shadow-md pt-safe-top">
           <div className="container mx-auto px-4 py-4 flex items-center">
             <Image
               src="/icon-currency.png"
