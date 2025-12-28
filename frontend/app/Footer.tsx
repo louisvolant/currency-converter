@@ -11,7 +11,7 @@ export default function Footer() {
   const { isDarkMode, toggleDarkMode } = useCurrency();
 
   return (
-    <footer className="bg-white dark:bg-gray-900 py-4 mt-8 transition-colors duration-300">
+    <footer className="bg-white dark:bg-gray-900 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] mt-8 transition-colors duration-300">
       <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-300">
         <div className="mb-4">
           {externalLinks.map((link, index) => (

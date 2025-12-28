@@ -4,8 +4,8 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { CurrencyLine, CurrencyContextType, CachedRates } from '../utils/types';
 import {
-    fetchExchangeRatesFawazahmed0 // <--- USE THIS ONE NOW
-    // fetchExchangeRatesFrankFurterDev // <-- Can keep this commented for now
+    fetchExchangeRatesFawazahmed0
+    // fetchExchangeRatesFrankFurterDev // to be used if we want to use FrankFurterDev
 } from '@/lib/api';
 
 // Initialize the context with undefined or null, and use a type assertion
