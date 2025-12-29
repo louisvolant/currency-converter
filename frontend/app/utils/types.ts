@@ -19,6 +19,7 @@ export interface CurrencyContextType {
   updateValue: (id: number, newValue: string) => void;
   updateCurrencyCode: (id: number, newCode: string) => void;
   removeCurrencyLine: (id: number) => void;
+  reorderCurrencies: (oldIndex: number, newIndex: number) => void;
 }
 
 // Define the structure for cached data

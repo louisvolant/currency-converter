@@ -9,10 +9,48 @@ import { Plus } from 'lucide-react';
 import { CurrencyLine as CurrencyLineType } from './utils/types';
 import { useState, useRef, useEffect } from 'react';
 
+// DnD Kit Imports
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  TouchSensor,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+
 export default function Home() {
-  const { currencyLines } = useCurrency();
+  const { currencyLines, reorderCurrencies } = useCurrency();
   const [showAdder, setShowAdder] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
+
+  // Configure sensors for Mobile PWA (Touch) and Desktop (Pointer)
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }), // Prevents accidental drags on click
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }), // Long press for mobile
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = currencyLines.findIndex((item) => item.id === active.id);
+      const newIndex = currencyLines.findIndex((item) => item.id === over.id);
+
+      // Safety: Do not allow moving anything to index 0 (EUR position)
+      // and do not allow moving index 0 (EUR) itself
+      if (oldIndex === 0 || newIndex === 0) return;
+
+      reorderCurrencies(oldIndex, newIndex);
+    }
+  };
 
   useEffect(() => {
     if (showAdder && topRef.current) {
@@ -29,12 +67,25 @@ export default function Home() {
           Your Currencies
         </h2>
 
-        {/* List of current currencies */}
-        {currencyLines.map((currency: CurrencyLineType) => (
-          <CurrencyLine key={currency.id} currency={currency} />
-        ))}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={currencyLines.map(c => c.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {currencyLines.map((currency: CurrencyLineType) => (
+              <CurrencyLine
+                key={currency.id}
+                currency={currency}
+                disabled={currency.isBase} // Custom prop to disable drag for EUR
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
 
-        {/* Add Currency Button or Full Panel */}
         <div className="mt-6">
           {!showAdder ? (
             <button

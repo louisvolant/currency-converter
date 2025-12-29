@@ -7,6 +7,7 @@ import {
     fetchExchangeRatesFawazahmed0
     // fetchExchangeRatesFrankFurterDev // to be used if we want to use FrankFurterDev
 } from '@/lib/api';
+import { arrayMove } from '@dnd-kit/sortable';
 
 // Initialize the context with undefined or null, and use a type assertion
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
@@ -235,13 +236,18 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
       });
     };
 
-// 7. Function to remove a currency line
+  // 7. Function to remove a currency line
   const removeCurrencyLine = (id: number) => {
     setCurrencyLines(prevLines => {
       // Prevent deleting the base currency (EUR)
       if (prevLines.length <= 1) return prevLines;
       return prevLines.filter(line => line.id !== id);
     });
+  };
+
+  // 8. Function to be able to reorder currencies
+  const reorderCurrencies = (oldIndex: number, newIndex: number) => {
+    setCurrencyLines((items) => arrayMove(items, oldIndex, newIndex));
   };
 
 
@@ -257,6 +263,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     updateValue,
     updateCurrencyCode,
     removeCurrencyLine,
+    reorderCurrencies,
   };
 
   return (
