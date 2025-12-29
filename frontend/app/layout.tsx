@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   title: 'Currency Converter',
   description: 'A multi-currency converter using Fawazahmed0 & FrankFurterDev rates.',
   icons: {
-    icon: '/currency-converter-128.png',
+    icon: '/icon-currency.png',
     apple: '/icons/icon-currency.png',
   },
   manifest: '/manifest.json',
