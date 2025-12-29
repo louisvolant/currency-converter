@@ -55,34 +55,40 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency, disabled }) => {
       }`}
     >
       <div className="flex items-center gap-3">
-        {/* DRAG HANDLE - Only show/enable if not base currency */}
+        {/* DRAG HANDLE - Only show if not the base currency (EUR) */}
         {!currency.isBase && (
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 touch-none"
           >
             <GripVertical className="w-5 h-5" />
           </div>
         )}
 
-        {/* Input container */}
+        {/* Value Input */}
         <div className="relative flex-1 min-w-0">
           <input
             type="number"
             inputMode="decimal"
             value={currency.value === 0 ? "" : currency.value.toString()}
             onChange={handleValueChange}
+            placeholder="0"
             className="w-full px-4 py-3 pr-12 text-lg sm:text-xl font-bold rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 text-right"
+            aria-label={`Value for ${currency.code}`}
           />
           {currency.value !== 0 && (
-            <button onClick={() => updateValue(currency.id, "")} className="absolute inset-y-0 right-3 flex items-center text-gray-400">
+            <button
+              type="button"
+              onClick={() => updateValue(currency.id, "")}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-red-500 transition"
+            >
               <X className="w-5 h-5" />
             </button>
           )}
         </div>
 
-        {/* Right Group */}
+        {/* Currency Badge and Remove button */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <div className="flex items-center gap-2 px-3 py-2 text-lg font-bold bg-blue-200 dark:bg-blue-600 text-blue-900 dark:text-blue-100 rounded-lg whitespace-nowrap">
             <span className={`fi fi-${countryCode}`} style={{ fontSize: '1.4rem' }} />
@@ -90,14 +96,17 @@ const CurrencyLine: React.FC<CurrencyLineProps> = ({ currency, disabled }) => {
           </div>
 
           {isRemovable && (
-            <button onClick={handleRemove} className="p-2 text-red-600 dark:text-red-400">
+            <button
+              onClick={handleRemove}
+              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition"
+            >
               <Trash2 className="w-5 h-5" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Reference row */}
+      {/* Conversion Rate Info (1 EUR = X Curr) */}
       {!currency.isBase && rateForOneEuro && (
         <div className="mt-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400 ml-8">
           1€ = <span className="font-semibold">{rateForOneEuro.toFixed(4)}</span> {currency.code}
