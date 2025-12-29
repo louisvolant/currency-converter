@@ -1,4 +1,5 @@
 // frontend/src/lib/api.ts
+import { ISO_FIAT_CURRENCIES } from '../app/utils/currencyData';
 
 // Define the structure of the response from frankfurter.dev (old API)
 interface FrankfurterResponse {
@@ -95,15 +96,10 @@ export async function fetchExchangeRatesFawazahmed0(): Promise<ExchangeData> {
         for (const [codeLower, rate] of Object.entries(rawRates)) {
             const codeUpper = codeLower.toUpperCase();
 
-            // 1. Filter: Check for 3-letter code
-            if (codeUpper.length === 3) {
-                // 2. Add Rate (using uppercase key)
+            // Filter over the code beeing in the ISO FIAT list
+            if (ISO_FIAT_CURRENCIES.has(codeUpper)) {
                 filteredRates[codeUpper] = rate;
-
-                // 3. Add Name (using uppercase key, but look up name using the lowercase key)
-                // If the name is not found in the rawNames map, fall back to the uppercase code itself.
-                const name = rawNames[codeLower] || codeUpper;
-                filteredNames[codeUpper] = name;
+                filteredNames[codeUpper] = rawNames[codeLower] || codeUpper;
             }
         }
 
