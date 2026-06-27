@@ -8,6 +8,12 @@ import {
     // fetchExchangeRatesFrankFurterDev // to be used if we want to use FrankFurterDev
 } from '@/lib/api';
 import { arrayMove } from '@dnd-kit/sortable';
+import {
+  loadCurrencyLines,
+  saveCurrencyLines,
+  loadRatesCache,
+  saveRatesCache,
+} from '@/lib/currencyDB';
 
 // Initialize the context with undefined or null, and use a type assertion
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
@@ -56,35 +62,35 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   const [availableCurrencies, setAvailableCurrencies] = useState<string[]>([]);
   const [currencyNames, setCurrencyNames] = useState<Record<string, string>>({});
 
-  // New State: specific flag to track if we have loaded from localStorage yet
+  // New State: specific flag to track if we have loaded from IndexedDB yet
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // --- 3. PERSISTENCE LOGIC (Load & Save) ---
-  const CURRENCY_STORAGE_KEY = 'currency_lines_state';
+  // --- 3. PERSISTENCE LOGIC (Load & Save via IndexedDB) ---
 
   // A. LOAD STATE ON MOUNT
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedLines = localStorage.getItem(CURRENCY_STORAGE_KEY);
-      if (savedLines) {
-        try {
-          const parsed = JSON.parse(savedLines);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setCurrencyLines(parsed);
-          }
-        } catch (e) {
-          console.error("Failed to parse saved currency lines", e);
-        }
+    const loadFromDB = async () => {
+      const savedLines = await loadCurrencyLines();
+      if (savedLines && Array.isArray(savedLines) && savedLines.length > 0) {
+        setCurrencyLines(savedLines);
       }
-      // Mark as initialized so we can start saving changes
       setIsInitialized(true);
-    }
+    };
+
+    loadFromDB();
   }, []);
 
-  // B. SAVE STATE ON CHANGE
-  // --- 4. Fetch Exchange Rates (Major Update) ---
+  // B. SAVE STATE ON CHANGE (IndexedDB)
   useEffect(() => {
-        const CACHE_KEY = 'rates_and_names_cache';
+    const saveToDB = async () => {
+      if (!isInitialized) return;
+      await saveCurrencyLines(currencyLines);
+    };
+    saveToDB();
+  }, [currencyLines, isInitialized]);
+
+  // --- 4. Fetch Exchange Rates (Major Update with IndexedDB + TTL) ---
+  useEffect(() => {
         const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
         const loadAndFetchRates = async () => {
@@ -92,27 +98,23 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
             let namesData: Record<string, string> = {};
             let isCacheValid = false;
 
-            // 1. Check LocalStorage
-            if (typeof window !== 'undefined') {
-                const cached = localStorage.getItem(CACHE_KEY);
-                if (cached) {
-                    try {
-                        const parsed: CachedRates = JSON.parse(cached);
-                        // Check if cache is less than 24 hours old
-                        if (Date.now() - parsed.timestamp < ONE_DAY_MS) {
-                            ratesData = parsed.rates;
-                            namesData = parsed.names;
-                            isCacheValid = true;
-                            console.log("Using cached rates and names.");
-                        }
-                    } catch (e) {
-                        console.error("Failed to parse cached data.", e);
-                        localStorage.removeItem(CACHE_KEY);
-                    }
+            // 1. Check IndexedDB cache first
+            const cached = await loadRatesCache();
+            if (cached) {
+                // Always use cached data if available (even if expired)
+                ratesData = cached.rates;
+                namesData = cached.names;
+
+                // Check if cache is still valid (< 24h)
+                if (Date.now() - cached.timestamp < ONE_DAY_MS) {
+                    isCacheValid = true;
+                    console.log("Using cached rates and names from IndexedDB.");
+                } else {
+                    console.log("IndexedDB cache expired (>24h), will try to refresh in background.");
                 }
             }
 
-            // 2. Fetch if cache is invalid/expired
+            // 2. Fetch fresh data if cache is expired or missing
             if (!isCacheValid) {
                 try {
                     console.log("Fetching fresh rates and names from Fawazahmed0 API...");
@@ -121,21 +123,23 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
                     ratesData = apiData.rates;
                     namesData = apiData.names;
 
-                    // 3. Store fresh data in LocalStorage
-                    if (typeof window !== 'undefined' && Object.keys(ratesData).length > 0) {
+                    // 3. Store fresh data in IndexedDB
+                    if (Object.keys(ratesData).length > 0) {
                         const newCache: CachedRates = {
                             timestamp: Date.now(),
                             rates: ratesData,
                             names: namesData,
                         };
-                        localStorage.setItem(CACHE_KEY, JSON.stringify(newCache));
+                        await saveRatesCache(newCache);
+                        console.log("Rates cache updated in IndexedDB.");
                     }
                 } catch (error) {
-                    console.error("Failed to update exchange rates in context.", error);
+                    console.error("Failed to fetch fresh rates (will use stale cache if available).", error);
+                    // If fetch fails, we keep the stale data from step 1
                 }
             }
 
-            // Only update state if we have valid data
+            // Only update state if we have valid data (stale or fresh)
             if (Object.keys(ratesData).length > 0) {
                 setExchangeRates(ratesData);
                 setCurrencyNames(namesData);

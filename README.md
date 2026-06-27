@@ -46,3 +46,16 @@ The application maintains a whitelist of valid ISO 4217 codes. During the fetch 
 
 ### Mobile Drag & Drop
 To maintain compatibility with PWA scrolling, the Drag & Drop functionality utilizes a **Touch Sensor** with a 250ms activation delay. This prevents accidental drags while scrolling through the list on mobile devices.
+
+---
+
+## ✅ Quality checks
+
+Before committing, run the TypeScript type check from the `frontend` directory:
+
+```bash
+cd frontend
+npx tsc --noEmit
+```
+
+This validates types without generating any build output.
