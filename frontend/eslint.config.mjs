@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // CommonJS config files with no "type": "module" in package.json.
+    "next.config.js",
+    "postcss.config.mjs",
+    // Auto-generated PWA service worker bundles (next-pwa & workbox).
+    "public/sw.js",
+    "public/workbox-*.js",
   ]),
 ]);
 

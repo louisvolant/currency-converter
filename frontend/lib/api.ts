@@ -16,7 +16,7 @@ interface FawazahmedRatesResponse {
 }
 
 // Define the structure for the currencies list (new API)
-interface FawazahmedCurrenciesListResponse extends Record<string, string> {}
+type FawazahmedCurrenciesListResponse = Record<string, string>;
 
 // --- NEW/UPDATED EXPORT TYPES ---
 export interface CurrencyNameMap {

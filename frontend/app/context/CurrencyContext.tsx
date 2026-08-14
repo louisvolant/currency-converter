@@ -25,21 +25,22 @@ const initialCurrencyLines: CurrencyLine[] = [
 
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   // 1. Dark Mode State
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  // Initialize Theme on Mount
-  useEffect(() => {
-    // Check localStorage or System Preference
-    const savedTheme = localStorage.getItem('theme');
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    // Read initial theme lazily to avoid a cascading setState in an effect.
+    if (typeof window === 'undefined' || !window.localStorage) return false;
+    const savedTheme = window.localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
+    return savedTheme === 'dark' || (!savedTheme && prefersDark);
+  });
+  // Keep the document class in sync with the theme state.
+  useEffect(() => {
+    const classList = document.documentElement.classList;
+    if (isDarkMode) {
+      classList.add('dark');
     } else {
-      setIsDarkMode(false);
-      document.documentElement.classList.remove('dark');
+      classList.remove('dark');
     }
-  }, []);
+  }, [isDarkMode]);
 
   // Toggle Function
   const toggleDarkMode = () => {
