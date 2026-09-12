@@ -15,5 +15,5 @@ export const externalLinks: LinkItem[] = [
   { label: 'Sun Over The Cloud', href: 'https://sunoverthe.cloud' },
   { label: 'Build My CV', href: 'https://buildmycv.net' },
   { label: 'My 20 years old blog', href: 'https://www.abricocotier.fr' },
-  { label: 'Whois', href: 'https://whois-js.vercel.app/' },
+  { label: 'Whois', href: 'https://whois.louisvolant.com' },
 ];
