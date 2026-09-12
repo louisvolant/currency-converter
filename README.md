@@ -67,18 +67,25 @@ The application uses Next.js static export (`output: 'export'`), generating a st
 
 ### Method 1: Git Integration (Recommended)
 
-1. In the [Cloudflare Dashboard](https://dash.cloudflare.com/), navigate to **Compute (Workers & Pages)** > **Pages** > **Connect to Git**.
-2. Select your repository.
-3. Configure build settings:
-   * **Framework preset:** `Next.js (Static HTML Export)` or `None`
-   * **Root directory:** `frontend`
-   * **Build command:** `npm run build`
-   * **Build output directory:** `out`
-4. Environment variables:
-   * `NODE_VERSION`: `24` (also specified in `.node-version`)
-5. Click **Save and Deploy**.
+### Method 1: Git Integration (Cloudflare Pages Dashboard)
 
-*(Note: If you choose to keep the root directory set to `/` instead of `frontend`, configure the build command as `cd frontend && npm install && npm run build` and the output directory as `frontend/out`.)*
+In the [Cloudflare Dashboard](https://dash.cloudflare.com/), navigate to **Compute (Workers & Pages)** > **Pages** > **Connect to Git** (or select your existing project > **Settings** > **Builds & deployments**):
+
+#### Option A: Subdirectory Build (Recommended)
+* **Framework preset:** `None`
+* **Root directory:** `frontend`
+* **Build command:** `npm run build`
+* **Build output directory:** `out`
+
+#### Option B: Root Directory Build
+* **Framework preset:** `None`
+* **Root directory:** `/` (leave empty)
+* **Build command:** `npm run build`
+* **Build output directory:** `frontend/out`
+
+> [!IMPORTANT]
+> Always set **Build command** to `npm run build` rather than `npx next build`. Next.js 16 defaults to Turbopack, whereas `next-pwa` requires webpack (`next build --webpack`), which is configured in `npm run build`.
+
 
 ### Method 2: Direct Upload via Wrangler CLI
 
