@@ -1,6 +1,6 @@
-# 🚀 Currency Converter Frontend
+# 🚀 Currency Converter
 
-This is the frontend repository for a multi-currency converter application, built using **Next.js 16 (App Router)**, **React 19**, and **Tailwind CSS 4**.
+A multi-currency converter application, built using **Next.js 16 (App Router)**, **React 19**, and **Tailwind CSS 4**.
 
 The application focuses on a clean, dynamic, and type-safe approach to handling financial data conversions with a mobile-first PWA experience.
 
@@ -54,7 +54,7 @@ Exchange rates and custom currency lists are stored using IndexedDB via `idb` (`
 
 ### PWA Zoom Prevention
 To provide a native application feel and prevent accidental zooming while interacting with inputs or scrolling:
-* **Viewport Lock:** `maximumScale: 1` and `userScalable: false` in Next.js `viewport` configuration (`layout.tsx`).
+* **Viewport Lock:** `maximumScale: 1` and `userScalable: false` in Next.js `viewport` configuration (`app/layout.tsx`).
 * **Touch Action:** `touch-action: pan-x pan-y` in CSS on `html, body` disables browser-level double-tap zoom while retaining smooth vertical and horizontal panning.
 * **Gesture Cancellation:** Client-side event listeners in `ClientThemeWrapper.tsx` intercept `gesturestart`, `gesturechange`, multi-touch moves (`touches.length > 1`), and `ctrl + wheel` trackpad pinch gestures.
 * **Input Sizing:** Inputs are styled with at least 16px font-size (`text-base` / `text-lg`) to prevent iOS Safari auto-zooming on focus.
@@ -63,43 +63,34 @@ To provide a native application feel and prevent accidental zooming while intera
 
 ## ☁️ Deployment to Cloudflare Pages
 
-The application uses Next.js static export (`output: 'export'`), generating a static distribution with PWA assets into `frontend/out`.
-
-### Method 1: Git Integration (Recommended)
+The application builds as a static export into the `out/` directory.
 
 ### Method 1: Git Integration (Cloudflare Pages Dashboard)
 
-In the [Cloudflare Dashboard](https://dash.cloudflare.com/), navigate to **Compute (Workers & Pages)** > **Pages** > **Connect to Git** (or select your existing project > **Settings** > **Builds & deployments**):
-
-#### Option A: Subdirectory Build (Recommended)
-* **Framework preset:** `None`
-* **Root directory:** `frontend`
-* **Build command:** `npm run build`
-* **Build output directory:** `out`
-
-#### Option B: Root Directory Build
-* **Framework preset:** `None`
-* **Root directory:** `/` (leave empty)
-* **Build command:** `npm run build`
-* **Build output directory:** `frontend/out`
+1. In the [Cloudflare Dashboard](https://dash.cloudflare.com/), navigate to **Compute (Workers & Pages)** > **Pages** > **Connect to Git**.
+2. Select your repository (`currency-converter`).
+3. Configure build settings:
+   * **Framework preset:** `None`
+   * **Root directory:** `/` *(leave empty)*
+   * **Build command:** `npm run build`
+   * **Build output directory:** `out`
+4. Node version is automatically detected from `.node-version` (`24`).
 
 > [!IMPORTANT]
 > Always set **Build command** to `npm run build` rather than `npx next build`. Next.js 16 defaults to Turbopack, whereas `next-pwa` requires webpack (`next build --webpack`), which is configured in `npm run build`.
 
-
 ### Method 2: Direct Upload via Wrangler CLI
 
-You can also build and deploy directly using Wrangler:
+Build and deploy directly with Wrangler:
 
 ```bash
-cd frontend
 npm run build
 npx wrangler pages deploy out --project-name=currency-converter
 ```
 
 ### Static Headers & PWA Caching
 
-Custom headers are defined in `frontend/public/_headers` and automatically exported to `out/_headers`. Cloudflare Pages applies them directly:
+Custom headers are defined in `public/_headers` and automatically exported to `out/_headers`. Cloudflare Pages applies them directly:
 * Disables caching for `sw.js` and Workbox scripts so PWA service worker updates are picked up immediately.
 * Sets long-term immutable caching (`Cache-Control: max-age=31536000, immutable`) for static assets under `/_next/static/`.
 
@@ -110,7 +101,6 @@ Custom headers are defined in `frontend/public/_headers` and automatically expor
 ### Development Server
 
 ```bash
-cd frontend
 npm run dev
 ```
 
@@ -119,7 +109,6 @@ npm run dev
 Before committing, validate types and linting:
 
 ```bash
-cd frontend
 npx tsc --noEmit
 npm run lint
 ```
@@ -127,6 +116,5 @@ npm run lint
 ### Production Build
 
 ```bash
-cd frontend
 npm run build
 ```
