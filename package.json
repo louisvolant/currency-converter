@@ -1,0 +1,9 @@
+{
+  "name": "currency-converter",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "lint": "npm run lint --prefix frontend"
+  }
+}
