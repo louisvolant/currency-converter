@@ -33,16 +33,18 @@ const withPWA = require('next-pwa')({
 
 // Define the Next.js configuration in a single object
 const nextConfig = {
+  output: 'export',
   reactStrictMode: true,
-    images: {
-        remotePatterns: [
-          {
-            protocol: 'https',
-            hostname: 'flagcdn.com',
-            //pathname: '/**', // Can be used if you want to be stricter on the path
-          },
-        ],
+  images: {
+    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
+        //pathname: '/**', // Can be used if you want to be stricter on the path
       },
+    ],
+  },
 };
 
 // Export the unique result of applying the PWA wrapper to the configuration
