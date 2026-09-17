@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Currency Converter logo">
+  <defs>
+    <linearGradient id="brandGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#9333EA"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="464" height="464" rx="112" fill="url(#brandGradient)"/>
+  
+  <path d="M 378.9 342 A 150 150 0 1 1 378.9 170" fill="none" stroke="#FFFFFF" stroke-width="46" stroke-linecap="round"/>
+  <path d="M 100 218 L 415 218" fill="none" stroke="#FFFFFF" stroke-width="46" stroke-linecap="round"/>
+  <path d="M 100 294 L 415 294" fill="none" stroke="#FFFFFF" stroke-width="46" stroke-linecap="round"/>
+
+</svg>

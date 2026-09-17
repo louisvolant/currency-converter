@@ -118,3 +118,13 @@ npm run lint
 ```bash
 npm run build
 ```
+
+### Generating PWA Icons
+
+All favicon and logo assets (SVG master, `.ico`, Apple touch icon, manifest and maskable PNGs) are generated from a single vector design in `scripts/generate-icons.mjs`:
+
+```bash
+npm run icons
+```
+
+Run this after any brand/design change, then commit the regenerated `public/` assets.

@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 // 1. Separate Viewport export
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  themeColor: '#2563EB',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -26,14 +26,17 @@ export const metadata: Metadata = {
   title: 'Currency Converter',
   description: 'A multi-currency converter using Fawazahmed0 & FrankFurterDev rates.',
   icons: {
-    icon: '/icon-currency.png',
-    apple: '/icons/icon-currency.png',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-touch-icon.png',
   },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'SuperApp',
+    title: 'Currency Converter',
   },
 };
 
