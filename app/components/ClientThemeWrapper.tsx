@@ -29,6 +29,18 @@ export default function ClientThemeWrapper({ children }: { children: ReactNode }
     document.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('wheel', handleWheel, { passive: false });
 
+    // Auto-reload on service worker update
+    let refreshing = false;
+    const handleControllerChange = () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    };
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
+    }
+
     return () => {
       document.removeEventListener('gesturestart', handleGesture);
       document.removeEventListener('gesturechange', handleGesture);
