@@ -21,6 +21,7 @@ The application focuses on a clean, dynamic, and type-safe approach to handling 
   * **Reference Rates:** Displays a discreet "1€ = X.XXXX" conversion rate inside each currency block for quick reference.
   * **Flag Integration:** Uses the `flag-icons` library for instant visual identification of currencies.
   * **Refined Inputs:** Features right-aligned numeric inputs, "Clear" (X) buttons, and responsive layouts for mobile use.
+  * **Responsive Footer:** Streamlined footer with direct links to personal page and portfolio, bullet separators, theme toggle, and mobile safe-area inset support.
 * **PWA Ready & Zoom Locked:** Configured with `next-pwa` for installation on iOS and Android with offline data support. Includes comprehensive zoom prevention (viewport scale locks, WebKit gesture cancellation, and `touch-action` controls) for a native app feel.
 * **Dark Mode Support:** Full dark/light mode synchronization via React Context and Tailwind CSS 4.
 

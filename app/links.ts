@@ -6,6 +6,6 @@ export interface LinkItem {
 
 // Footer links. Kept intentionally short so the footer fits on a single line.
 export const footerLinks: LinkItem[] = [
-  { label: 'Personal Page', href: 'https://www.louisvolant.com' },
+  { label: 'Page personnelle', href: 'https://www.louisvolant.com' },
   { label: 'Portfolio', href: 'https://www.louisvolant.com/portfolio' },
 ];
