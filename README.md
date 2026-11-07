@@ -114,6 +114,17 @@ npx tsc --noEmit
 npm run lint
 ```
 
+### Security & Dependency Audit
+
+To inspect dependency vulnerabilities:
+
+```bash
+npm audit
+```
+
+> [!NOTE]
+> Do not use `npm audit fix --force` as it would downgrade `next-pwa` to an incompatible legacy version. Safe overrides for transitive dependencies (such as `serialize-javascript` and `minimatch`) are maintained in `package.json`.
+
 ### Production Build
 
 ```bash
