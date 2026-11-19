@@ -22,7 +22,7 @@ The application focuses on a clean, dynamic, and type-safe approach to handling 
   * **Flag Integration:** Uses the `flag-icons` library for instant visual identification of currencies.
   * **Refined Inputs:** Features right-aligned numeric inputs, "Clear" (X) buttons, and responsive layouts for mobile use.
   * **Responsive Footer:** Streamlined footer with direct links to personal page and portfolio, bullet separators, theme toggle, and mobile safe-area inset support.
-* **PWA Ready & Zoom Locked:** Configured with `next-pwa` for installation on iOS and Android with offline data support. Includes comprehensive zoom prevention (viewport scale locks, WebKit gesture cancellation, and `touch-action` controls) for a native app feel.
+* **PWA Ready & Zoom Locked:** Configured with `@serwist/next` (`app/sw.ts`) for installation on iOS and Android with offline data support. Includes comprehensive zoom prevention (viewport scale locks, WebKit gesture cancellation, and `touch-action` controls) for a native app feel.
 * **Dark Mode Support:** Full dark/light mode synchronization via React Context and Tailwind CSS 4.
 
 ---
@@ -78,7 +78,7 @@ The application builds as a static export into the `out/` directory.
 4. Node version is automatically detected from `.node-version` (`24`).
 
 > [!IMPORTANT]
-> Always set **Build command** to `npm run build` rather than `npx next build`. Next.js 16 defaults to Turbopack, whereas `next-pwa` requires webpack (`next build --webpack`), which is configured in `npm run build`.
+> Always set **Build command** to `npm run build` rather than `npx next build`. Next.js 16 defaults to Turbopack, whereas `@serwist/next` webpack integration (`next build --webpack`) is configured in `npm run build`.
 
 ### Method 2: Direct Upload via Wrangler CLI
 
@@ -92,7 +92,7 @@ npx wrangler pages deploy out --project-name=currency-converter
 ### Static Headers & PWA Caching
 
 Custom headers are defined in `public/_headers` and automatically exported to `out/_headers`. Cloudflare Pages applies them directly:
-* Disables caching for `sw.js` and Workbox scripts so PWA service worker updates are picked up immediately.
+* Disables caching for `sw.js` so PWA service worker updates are picked up immediately.
 * Sets long-term immutable caching (`Cache-Control: max-age=31536000, immutable`) for static assets under `/_next/static/`.
 
 ---
@@ -123,7 +123,7 @@ npm audit
 ```
 
 > [!NOTE]
-> Do not use `npm audit fix --force` as it would downgrade `next-pwa` to an incompatible legacy version. Safe overrides for transitive dependencies (such as `serialize-javascript` and `minimatch`) are maintained in `package.json`.
+> Safe dependency overrides (such as `minimatch`) are maintained in `package.json` when needed for upstream linting tooling.
 
 ### Production Build
 

@@ -38,3 +38,6 @@ yarn-error.log*
 next-env.d.ts
 .idea
 sw.js
+sw.js.map
+swe-worker-*.js
+swe-worker-*.js.map

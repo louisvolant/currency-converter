@@ -107,7 +107,7 @@ test.describe('Currency Converter', () => {
     await expect(portfolioLink).toHaveAttribute('target', '_blank');
   });
 
-  test('serves valid PWA manifest and service worker assets', async ({ request }) => {
+  test('serves valid PWA manifest and registers active Serwist service worker', async ({ page, request }) => {
     const manifestRes = await request.get('/manifest.json');
     expect(manifestRes.ok()).toBeTruthy();
     const manifest = await manifestRes.json();
@@ -115,5 +115,13 @@ test.describe('Currency Converter', () => {
 
     const swRes = await request.get('/sw.js');
     expect(swRes.ok()).toBeTruthy();
+
+    await page.goto('/');
+    const swRegistered = await page.evaluate(async () => {
+      if (!('serviceWorker' in navigator)) return false;
+      const registration = await navigator.serviceWorker.ready;
+      return Boolean(registration && registration.active && registration.active.scriptURL.endsWith('/sw.js'));
+    });
+    expect(swRegistered).toBeTruthy();
   });
 });
