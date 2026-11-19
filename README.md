@@ -131,6 +131,15 @@ npm audit
 npm run build
 ```
 
+### End-to-End Tests (Playwright)
+
+Build the static export first, then run the Playwright E2E suite against `out/`:
+
+```bash
+npm run build
+npm run test:e2e
+```
+
 ### Generating PWA Icons
 
 All favicon and logo assets (SVG master, `.ico`, Apple touch icon, manifest and maskable PNGs) are generated from a single vector design in `scripts/generate-icons.mjs`:
