@@ -98,13 +98,18 @@ test.describe('Currency Converter', () => {
     const afterToggleDark = await html.evaluate((el) => el.classList.contains('dark'));
     expect(afterToggleDark).toBe(!initialDark);
 
-    const personalLink = page.getByRole('link', { name: 'Page personnelle' });
+    const personalNav = page.getByRole('navigation', { name: 'Personal' });
+    await expect(personalNav).toBeVisible();
+
+    const personalLink = personalNav.getByRole('link', { name: 'Personal Page' });
     await expect(personalLink).toHaveAttribute('href', 'https://www.louisvolant.com');
     await expect(personalLink).toHaveAttribute('target', '_blank');
+    await expect(personalLink).toHaveAttribute('rel', 'noopener noreferrer');
 
-    const portfolioLink = page.getByRole('link', { name: 'Portfolio' });
+    const portfolioLink = personalNav.getByRole('link', { name: 'Portfolio' });
     await expect(portfolioLink).toHaveAttribute('href', 'https://www.louisvolant.com/portfolio');
     await expect(portfolioLink).toHaveAttribute('target', '_blank');
+    await expect(portfolioLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
   test('serves valid PWA manifest and registers active Serwist service worker', async ({ page, request }) => {
